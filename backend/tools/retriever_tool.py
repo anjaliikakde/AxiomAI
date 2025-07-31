@@ -1,49 +1,33 @@
-from pathlib import Path
+from langchain.tools.retriever import create_retriever_tool
 from langchain_community.document_loaders import WebBaseLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-from langchain.tools.retriever import create_retriever_tool
-import os
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from config.settings import get_settings
 
-FAISS_PATH = Path("data/faiss_store")
-INDEX_FILE = FAISS_PATH / "index.faiss"
-PICKLE_FILE = FAISS_PATH / "index.pkl"
+settings = get_settings()
+
+def setup_retriever(url):
+    """Setup and return a retriever for the given URL."""
+    loader = WebBaseLoader(url)
+    docs = loader.load()
+    
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200
+    )
+    split_docs = text_splitter.split_documents(docs)
+    
+    embeddings = OpenAIEmbeddings(api_key=settings.openai_api_key)
+    vectorstore = FAISS.from_documents(split_docs, embeddings)
+    
+    return vectorstore.as_retriever(search_kwargs={"k": 1})
 
 def get_retriever_tool():
-    if INDEX_FILE.exists() and PICKLE_FILE.exists():
-        try:
-            vectordb = FAISS.load_local(
-                folder_path=str(FAISS_PATH),
-                embeddings=OpenAIEmbeddings(),
-                allow_dangerous_deserialization=True
-            )
-            print("✅ Loaded existing FAISS index.")
-        except Exception as e:
-            print(f"❌ Error loading FAISS: {e}")
-            vectordb = generate_and_save_faiss()
-    else:
-        vectordb = generate_and_save_faiss()
-
-    retriever = vectordb.as_retriever(search_kwargs={"k": 1})
+    """Return the dynamic retriever tool for custom documents."""
     return create_retriever_tool(
-        retriever=retriever,
-        name="smith_langchain_retriever",
-        description="Retrieves info from LangChain docs.",
+        retriever=setup_retriever("https://python.langchain.com/docs/get_started/introduction"),
+        name="document_retriever",
+        description="Useful for retrieving specific information from custom documents or websites. "
+                    "Input should be a URL or document reference followed by the query."
     )
-
-def generate_and_save_faiss():
-    print("🔄 Generating new FAISS index...")
-    loader = WebBaseLoader("https://python.langchain.com/docs/tutorials/agents/")
-    docs = loader.load()
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    split_docs = splitter.split_documents(docs)
-
-    vectordb = FAISS.from_documents(split_docs, OpenAIEmbeddings())
-
-    # Save to disk
-    FAISS_PATH.mkdir(parents=True, exist_ok=True)
-    vectordb.save_local(str(FAISS_PATH))
-    print("✅ FAISS index saved.")
-
-    return vectordb

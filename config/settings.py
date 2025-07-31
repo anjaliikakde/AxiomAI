@@ -1,11 +1,17 @@
-import os
-from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
+from pydantic import Field
 
-load_dotenv()
+class Settings(BaseSettings):
+    """Application settings and configurations."""
+    
+    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
+    langchain_api_key: str = Field(..., env="LANGCHAIN_API_KEY")
+    langchain_tracing_v2: bool = Field(True, env="LANGCHAIN_TRACING_V2")
+    
+    class Config:
+        env_file = ".env"
+        extra = "ignore"  # This will ignore extra environment variables
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
-
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_API_KEY"] = LANGCHAIN_API_KEY
+def get_settings():
+    """Get application settings."""
+    return Settings()

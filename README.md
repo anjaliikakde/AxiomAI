@@ -1,6 +1,6 @@
-# [📑 Wiki_ArXiv – Research Assistant]()
+# [📑Research Assistant]()
 
-WikiArxiv is an advanced RAG-based system that uses tools to search for information. It works like an AI agent that can understand questions, decide which tool to use, gather the information, and provide a helpful answer. It includes three tools: Wikipedia, Arxiv, and a Retriever tool. Together, they allow the system to answer questions by pulling content from Wikipedia, relevant research papers from Arxiv, and any specific documents added by the user. It is helpful for research purposes where reliable and relevant information is needed.
+This is an advanced RAG-based system that uses tools to search for information. It works like an AI agent that can understand questions, decide which tool to use, gather the information, and provide a helpful answer. It includes three tools: Wikipedia, Arxiv, and a Retriever tool. Together, they allow the system to answer questions by pulling content from Wikipedia, relevant research papers from Arxiv, and any specific documents added by the user. It is helpful for research purposes where reliable and relevant information is needed.
 
 This project helps someone in doing research work by searching and summarizing research papers, general topic explanations, and specific documents. For example, if you input a research topic, it fetches related research papers from Arxiv and provides background information from Wikipedia. The Retriever tool adds the ability to pull in custom documents like LangChain documentation or internal PDFs.
 

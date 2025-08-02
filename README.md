@@ -89,7 +89,7 @@ This file lists all Python packages the project needs to run. It helps others in
 
 This structure keeps the code clean, organized, and easy to scale by separating logic, tools, UI, and config. This makes debugging, testing, and adding new features much simpler.
 
-## Concepts Used in WikiArxiv
+## Concepts Used 
 ## [Vectore Store]()
 FAISS (Facebook AI Similarity Search) is a high-performance C++ library with Python bindings, designed for fast nearest-neighbor search in high-dimensional vector spaces, which is critical for semantic search in GenAI applications.
 
